@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:5000/applications';
+const API_BASE_URL = 'https://internship-application-tracker-io4x.onrender.com/';
 
 export const api = {
     getApplications: async () => {
