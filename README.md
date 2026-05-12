@@ -1,16 +1,90 @@
-# React + Vite
+# 🚀 Internship Application Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A sleek, full-stack web application designed to help job seekers organize their recruitment journey. Featuring a responsive interface with **Dark and Light mode** support and a robust **Flask API**.
 
-Currently, two official plugins are available:
+## 📝 Description
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This tracker allows users to log their job applications, track their status (Applied, Interviewing, Offer, Rejected), and manage entries in real-time. It solves the "spreadsheet fatigue" by providing a clean, visual dashboard that adapts to your preferred viewing environment.
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Theme Toggle**: Seamlessly switch between polished Light and Dark modes.
+* **Real-time CRUD**: Create, Read, Update, and Delete applications instantly.
+* **Status Badges**: High-contrast, color-coded tags for quick status identification.
+* **Responsive Design**: Modern UI with consistent spacing and clear "touch targets" for buttons.
+* **Loading & Error Handling**: Graceful UI states for API fetches and server downtime.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Frontend
+
+* **React** (Vite)
+* **CSS3** (Custom Properties & Flexbox)
+* **Lucide React** (Icons)
+
+### Backend
+
+* **Flask** (Python)
+* **Flask-CORS** (Cross-Origin Resource Sharing)
+* **Gunicorn** (Production Server)
+
+### Deployment
+
+* **Vercel**: Frontend Hosting
+* **Render**: Backend Hosting
+
+## 📸 Screenshots
+
+### Dark Mode
+<img width="1069" height="1047" alt="Screenshot 2026-05-12 at 11 41 19" src="https://github.com/user-attachments/assets/fed2d4d2-e860-4e1c-af07-88479f582020" />
+
+### Light Mode
+<img width="1070" height="1057" alt="Screenshot 2026-05-12 at 11 41 07" src="https://github.com/user-attachments/assets/0fd9d619-b6f0-4023-8385-706300a91cbb" />
+
+## 🌐 Live Demo
+
+Check out the live application here: **https://internship-tracker-react.vercel.app/**
+
+---
+
+## ⚙️ Setup Instructions
+
+### Prerequisites
+
+* Node.js & npm
+* Python 3.x
+
+### 1. Backend Setup
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+
+```
+
+### 2. Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+
+```
+
+### 3. Environment Variables
+
+Create a `.env` file in the frontend directory:
+
+```text
+VITE_API_URL=http://127.0.0.1:5000
+
+```
+
+---
+
+## 🤝 Contributing
+
+Feel free to fork this project and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
