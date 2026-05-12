@@ -4,7 +4,8 @@ from storage import save_applications, load_applications, Application
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": ["https://internship-tracker-react.vercel.app/"]}})
+
+CORS(app, resources={r"/*": {"origins": "https://internship-tracker-react.vercel.app"}})
 
 @app.route('/applications', methods=['GET'])
 def get_applications():
