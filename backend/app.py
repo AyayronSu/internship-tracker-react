@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 CORS(app, resources={r"/*": {"origins": "https://internship-tracker-react.vercel.app"}})
-
+    
 @app.route('/applications', methods=['GET'])
 def get_applications():
     apps = load_applications()

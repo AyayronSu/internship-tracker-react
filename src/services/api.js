@@ -1,4 +1,4 @@
-const API_BASE_URL = '[https://internship-application-tracker-io4x.onrender.com/applications](https://internship-application-tracker-io4x.onrender.com/applications)';
+const API_BASE_URL = 'https://internship-application-tracker-io4x.onrender.com/applications';
 
 export const api = {
     getApplications: async () => {
