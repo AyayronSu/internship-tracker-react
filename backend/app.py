@@ -1,15 +1,39 @@
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from storage import save_applications, load_applications, Application
+from flask_sqlalchemy import SQLAlchemy
+import uuid
 
 app = Flask(__name__)
 
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-CORS(app, resources={r"/*": {"origins": "https://internship-tracker-react.vercel.app"}})
-    
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'applications.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+class Application(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    company = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(50), default='Applied')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "company": self.company,
+            "role": self.role,
+            "status": self.status
+        }
+
+with app.app_context():
+    db.create_all()
+
 @app.route('/applications', methods=['GET'])
 def get_applications():
-    apps = load_applications()
+    apps = Application.query.all()
     return jsonify([app.to_dict() for app in apps])
 
 @app.route('/applications', methods=['POST'])
@@ -18,40 +42,33 @@ def add_application():
     new_app = Application(
         company=data.get('company'),
         role=data.get('role'),
-        status=data.get('status')
+        status=data.get('status', 'Applied')
     )
-    current_apps = load_applications()
-    current_apps.append(new_app)
-    save_applications(current_apps)
+    db.session.add(new_app)
+    db.session.commit()
     return jsonify(new_app.to_dict()), 201
 
-@app.route('/applications/<app_id>', methods=['PUT', 'OPTIONS'])
+@app.route('/applications/<app_id>', methods=['PUT'])
 def update_application(app_id):
-    if request.method == 'OPTIONS':
-        return jsonify({"msg": "ok"}), 200
-    
     data = request.get_json()
-    current_apps = load_applications()
-    target_app = next((app for app in current_apps if app.id == app_id), None)
+    app_entry = Application.query.get(app_id)
 
-    if target_app:
-        target_app.company = data.get('company', target_app.company)
-        target_app.role = data.get('role', target_app.role)
-        target_app.status = data.get('status', target_app.status)
-        save_applications(current_apps)
-        return jsonify({"message": "Updated"}), 200
-    return jsonify({"error": "Not found"}), 404
-
-@app.route('/applications/<app_id>', methods=['DELETE', 'OPTIONS'])
-def delete_application(app_id):
-    if request.method == 'OPTIONS':
-        return jsonify({"msg": "ok"}), 200
+    if not app_entry:
+        return jsonify({"error": "Not found"}), 404
     
-    current_apps = load_applications()
-    new_apps = [app for app in current_apps if app.id != app_id]
+    app_entry.company = data.get('company', app_entry.company)
+    app_entry.role = data.get('role', app_entry.role)
+    app_entry.status = data.get('status', app_entry.status)
 
-    if len(new_apps) < len(current_apps):
-        save_applications(new_apps)
+    db.session.commit()
+    return jsonify(app_entry.to_dict()), 200
+
+@app.route('/applications/<app_id>', methods=['DELETE'])
+def delete_application(app_id):
+    app_entry = Application.query.get(app_id)
+    if app_entry:
+        db.session.delete(app_entry)
+        db.session.commit()
         return jsonify({"message": "Deleted"}), 200
     return jsonify({"error": "Not found"}), 404
 
