@@ -1,16 +1,21 @@
-const API_BASE_URL = 'http://127.0.0.1:5000/applications';
+const BASE_URL = 'http://127.0.0.1:5000'; 
 
 export const api = {
+    checkAuth: async () => {
+        const response = await fetch(`${BASE_URL}/check-auth`, { credentials: 'include' });
+        return await response.json();
+    },
+    logout: async () => {
+        const response = await fetch(`${BASE_URL}/logout`, { credentials: 'include' });
+        return await response.json();
+    },
     getApplications: async () => {
-        const response = await fetch(API_BASE_URL, {
-            credentials: 'include',
-        });
+        const response = await fetch(`${BASE_URL}/applications`, { credentials: 'include' });
         if (response.status === 401) throw new Error("Unauthorized");
         return await response.json();
     },
-
     addApplication: async (appData) => {
-        const response = await fetch(API_BASE_URL, {
+        const response = await fetch(`${BASE_URL}/applications`, {
             credentials: 'include',
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -19,9 +24,8 @@ export const api = {
         if (response.status === 401) throw new Error("Unauthorized");
         return await response.json();
     },
-
     updateApplication: async (id, appData) => {
-        const response = await fetch(`${API_BASE_URL}/${id}`, {
+        const response = await fetch(`${BASE_URL}/applications/${id}`, {
             credentials: 'include',
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -32,7 +36,7 @@ export const api = {
     },
 
     deleteApplication: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/${id}`, {
+        const response = await fetch(`${BASE_URL}/applications/${id}`, {
             credentials: 'include',
             method: 'DELETE',
         });

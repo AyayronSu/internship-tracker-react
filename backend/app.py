@@ -43,6 +43,7 @@ class Application(db.Model):
     company = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(50), default='Applied')
+    user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
 
     def to_dict(self):
         return {
@@ -60,6 +61,12 @@ def load_user(user_id):
 
 with app.app_context():
     db.create_all()
+
+@app.route('/check-auth')
+def check_auth():
+    if current_user.is_authenticated:
+        return jsonify({"is_logged_in": True, "user": current_user.username}), 200
+    return jsonify({"is_logged_in": False}), 401
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -92,7 +99,7 @@ def logout():
 @login_required
 def get_applications():
     user_apps = current_user.applications
-    return jsonify([app.to_dict() for app in apps])
+    return jsonify([app.to_dict() for app in user_apps])
 
 @app.route('/applications', methods=['POST'])
 @login_required
@@ -112,8 +119,7 @@ def add_application():
 @login_required
 def update_application(app_id):
     data = request.get_json()
-    app_entry = Application.query.get(app_id)
-
+    app_entry = Application.query.filter_by(id=app_id, user_id=current_user.id).first()
     if not app_entry:
         return jsonify({"error": "Not found"}), 404
     
@@ -127,7 +133,7 @@ def update_application(app_id):
 @app.route('/applications/<app_id>', methods=['DELETE'])
 @login_required
 def delete_application(app_id):
-    app_entry = Application.query.get(app_id)
+    app_entry = Application.query.filter_by(id=app_id, user_id=current_user.id).first()
     if app_entry:
         db.session.delete(app_entry)
         db.session.commit()
