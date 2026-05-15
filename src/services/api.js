@@ -36,7 +36,7 @@ export const api = {
             credentials: 'include',
             method: 'DELETE',
         });
-        if (response.status === 401) throw new Error("Unauthorized");
+        if (response.status === 401) throw new Error("Unauthorized")
         return response.ok;
     }
 }
