@@ -80,18 +80,21 @@ function App() {
 
   return (
       <div className="app-container">
-        <div className="header-container">
-          <div className="brand">
-              <h1>Application Tracker</h1>
-              <p className="welcome-text">Logged in as: <strong>{user}</strong></p>
+        <header className="main-header">
+          <div className="brand-group">
+            <div className="logo-icon">🚀</div>
+            <div>
+              <h1>ApplyTrack</h1>
+              <p>Logged in as <span>{user}</span></p>
+            </div>
           </div>
-          <div className="header-controls">
-            <button onClick={() => setDarkMode(!darkMode)} className='theme-toggle'>
-              {darkMode ? '☀️ Light' : '🌙 Dark'}
-            </button>
-            <button onClick={handleLogout} className="logout-btn">Logout</button>
+          <div className="nav-actions">
+            <button onClick={() => setDarkMode(!darkMode)} className="icon-btn">
+                  {darkMode ? '☀️' : '🌙'}
+            </button>         
+            <button className="logout-pill" onClick={handleLogout}>Logout</button>   
           </div>
-        </div>
+        </header>
 
         <AddAppForm onAdd={fetchApps} />
         <hr />
@@ -114,7 +117,9 @@ function App() {
 
         {applications.length === 0 ? (
           <div className="empty-state">
-            No applications found. Start by adding one above!
+            <div className="empty-icon">📁</div>
+            <h3>No applications yet</h3>
+            <p>Your dream job is waiting. Add your first application above to start tracking your journey!</p>
           </div>
         ) : (
           <div className="list-container">
