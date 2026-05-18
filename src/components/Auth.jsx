@@ -60,7 +60,11 @@ function Auth({ onLogin, mode }) {
 
             {isLoginMode ? (
                 <p className="auth-switch-text">
-                    Need an account? <Link to="/login" className="toggle-link">Login here</Link>
+                    Need an account? <Link to="/signup" className="toggle-link">Register here</Link>
+                </p>
+            ) : (
+                <p className="auth-switch-text">
+                    Already have an account? <Link to="/login" className="toggle-link">Login here</Link>
                 </p>
             )}
 
