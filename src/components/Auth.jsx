@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import FormInput from "./ui/FormInput";
+import Button from "./ui/Button";
 
 function Auth({ onLogin, mode }) {
     const isLoginMode = mode === "login";
@@ -8,9 +10,11 @@ function Auth({ onLogin, mode }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const endpoint = isLoginMode ? '/login' : '/register';
 
         try {
@@ -24,16 +28,15 @@ function Auth({ onLogin, mode }) {
             const data = await response.json();
 
             if (response.ok) {
-                if (isLoginMode) {
-                    onLogin(data.user);
-                } else {
-                    navigate('/login');
-                }
+                if (isLoginMode) onLogin(data.user);
+                else navigate('/login');
             } else {
                 setError(data.error);
             }
         } catch (err) {
             setError("Server connection failed.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -41,21 +44,22 @@ function Auth({ onLogin, mode }) {
         <div className="auth-container">
             <h2>{isLoginMode ? 'Login' : 'Sign Up'}</h2>
             <form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
+                <FormInput 
                     placeholder="Username" 
                     value={username}
                     onChange={e => setUsername(e.target.value)}
                     required 
                 />
-                <input
+                <FormInput
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={e => setPassword(e.target.value)} 
                     required 
                 />
-                <button type="submit">{isLoginMode ? 'Enter' : 'Create Account'}</button>
+                <Button type="submit" loading={loading}>
+                    {isLoginMode ? 'Enter' : 'Create Account'}
+                </Button>
             </form>
 
             {isLoginMode ? (
