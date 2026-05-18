@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import Navbar from './components/Navbar';
 import DashboardPage from './pages/DashboardPage';
 import { api } from './services/api';
 import './App.css'
@@ -49,6 +50,8 @@ function App() {
           {darkMode ? '☀️ Light' : '🌙 Dark'}
         </button>
       </div>
+
+      <Navbar></Navbar>
 
       <Routes>
         <Route
