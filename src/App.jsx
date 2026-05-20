@@ -45,36 +45,47 @@ function App() {
 
   return (
     <Router>
-      <div className="theme-toggle-container" style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
-        <button onClick={() => setDarkMode(!darkMode)}className='theme-toggle'>
-          {darkMode ? '☀️ Light' : '🌙 Dark'}
-        </button>
+      <div className="main-layout">
+        {user && (
+          <div className="app-container">
+            <Navbar
+              user={user}
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              handleLogout={handleLogout}
+            />
+          </div>
+        )}
+
+        {!user && (
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className='theme-toggle global-floating-toggle'
+          >
+            {darkMode ? '☀️ Light' : '🌙 Dark'}
+          </button>
+        )}
+
+        <Routes>
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" replace /> : <LoginPage onLogin={(username) => setUser(username)} />}
+          />
+          <Route
+            path="/signup"
+            element={user ? <Navigate to="/" replace /> : <SignupPage onLogin={(username) => setUser(username)} />}
+          />
+          <Route 
+            path="/"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <DashboardPage user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
-
-      <Navbar></Navbar>
-
-      <Routes>
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/" replace /> : <LoginPage onLogin={(username) => setUser(username)} />}
-        />
-
-        <Route
-          path="/signup"
-          element={user ? <Navigate to="/" replace /> : <SignupPage onLogin={(username) => setUser(username)} />}
-        />       
-
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute user={user} loading={loading}>
-              <DashboardPage user={user} handleLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
     </Router>
   );
 }

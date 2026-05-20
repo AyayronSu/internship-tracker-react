@@ -3,7 +3,7 @@ import AppCard from "../components/AppCard";
 import AddAppForm from "../components/AddAppForm";
 import { api } from "../services/api";
 
-function DashboardPage({ user, handleLogout }) {
+function DashboardPage({ user }) {
     const [applications, setApplications] = useState([])
     const [filter, setFilter] = useState('All');
     const [error, setError] = useState(null);
@@ -29,22 +29,12 @@ function DashboardPage({ user, handleLogout }) {
 
     return (
         <div className="app-container">
-            <div className="header-container">
-                <div className="brand">
-                    <h1>Application Tracker</h1>
-                    <p className="welcome-text">Logged in as: <strong>{user}</strong></p>
-                </div>
-                <div className="header-controls">
-                    <button onClick={handleLogout} className="logout-btn">Logout</button>
-                </div>
-            </div>
-
             <AddAppForm onAdd={fetchApps} />
-            <hr />
 
             <div className="filter-section">
+                <label className="filter-label">Filter Status:</label>
                 <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-                    <option value="All">All statuses</option>
+                    <option value="All">All Statuses</option>
                     <option value="Applied">Applied</option>
                     <option value="Interviewing">Interviewing</option>
                     <option value="Offer">Offer</option>
@@ -54,7 +44,7 @@ function DashboardPage({ user, handleLogout }) {
 
             {error && (
                 <div className="error-banner">
-                    {error} <button onClick={fetchApps}>Retry</button>
+                    {error} <button className="retry-btn" onClick={fetchApps}>Retry</button>
                 </div>
             )}
 

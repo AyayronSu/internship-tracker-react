@@ -1,59 +1,56 @@
 import { useState } from "react";
-import { api } from "../services/api";
+import FormInput from "./ui/FormInput";
+import Button from "./ui/Button";
 
 function AddAppForm({ onAdd }) {
-    const [formData, setFormData] = useState({
-        company: '',
-        role: '',
-        status: 'Applied'
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [company, setCompany] = useState('');
+    const [role, setRole] = useState('');
+    const [status, setStatus] = useState('Applied');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
-        if (!formData.company.trim() || !formData.role.trim()) {
-            alert("Please enter both a company name and a role.");
-            return;
-        }
-        
-        setIsSubmitting(true);
+        const { api } = await import('../services/api');
+
         try {
-            await api.addApplication(formData);
-            setFormData({ company: '', role: '', status: 'Applied' });
+            await api.addApplication({ company, role, status });
+            setCompany('');
+            setRole('');
+            setStatus('Applied');
             onAdd();
         } catch (err) {
-            alert("Failed to save application. Please try again.");
+            console.error("Failed to add application:", err);
         } finally {
-            setIsSubmitting(false);
+            setLoading(false);
         }
     };
 
     return (
         <form className="add-form" onSubmit={handleSubmit}>
-            <input 
-                type="text"  
+            <FormInput 
                 placeholder="Company Name"
-                value={formData.company}
-                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                required
             />
-            <input 
-                type="text"  
-                placeholder="Job Role"
-                value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+            <FormInput 
+                placeholder="Job Role/Title"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
             />
-            <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-            >
-                <option value="Applied">Applied</option>
-                <option value="Interviewing">Interviewing</option>
-                <option value="Offer">Offer</option>
-                <option value="Rejected">Rejected</option>
-            </select>
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Add Application"}
+            <div className="form-group select-group">
+                <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                    <option value="Applied">Applied</option>
+                    <option value="Interviewing">Interviewing</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <button type="submit" loading={loading}>
+                Add Application
             </button>
         </form>
     )
