@@ -19,6 +19,15 @@ function DashboardPage({ user }) {
         }
     };
 
+    const handleAddApplication = async (newApp) => {
+        try {
+            await api.addApplication(newApp);
+            fetchApps();
+        } catch (err) {
+            setError("Failed to add application. Please try again.");
+        }
+    };
+
     useEffect(() => {
         fetchApps();
     }, []);
@@ -29,7 +38,7 @@ function DashboardPage({ user }) {
 
     return (
         <div className="app-container">
-            <AddAppForm onAdd={fetchApps} />
+            <AddAppForm onAdd={handleAddApplication} />
 
             <div className="filter-section">
                 <label className="filter-label">Filter Status:</label>

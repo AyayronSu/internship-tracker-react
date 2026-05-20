@@ -12,48 +12,29 @@ function AddAppForm({ onAdd }) {
         e.preventDefault();
         setLoading(true);
 
-        const { api } = await import('../services/api');
+        await onAdd({ company, role, status });
 
-        try {
-            await api.addApplication({ company, role, status });
-            setCompany('');
-            setRole('');
-            setStatus('Applied');
-            onAdd();
-        } catch (err) {
-            console.error("Failed to add application:", err);
-        } finally {
-            setLoading(false);
-        }
+        setCompany('');
+        setRole('');
+        setStatus('Applied');
+        setLoading(false);
     };
 
     return (
-        <form className="add-form" onSubmit={handleSubmit}>
-            <FormInput 
-                placeholder="Company Name"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                required
-            />
-            <FormInput 
-                placeholder="Job Role/Title"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
-            />
+        <form onSubmit={handleSubmit} className="add-form">
+            <FormInput placeholder="Company Name" value={company} onChange={e => setCompany(e.target.value)} required />
+            <FormInput placeholder="Job Role/Title" value={role} onChange={e => setRole(e.target.value)} required />
             <div className="form-group select-group">
-                <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <select value={status} onChange={e => setStatus(e.target.value)}>
                     <option value="Applied">Applied</option>
                     <option value="Interviewing">Interviewing</option>
                     <option value="Offer">Offer</option>
                     <option value="Rejected">Rejected</option>
                 </select>
             </div>
-            <button type="submit" loading={loading}>
-                Add Application
-            </button>
+            <Button type="submit" loading={loading}>Add Application</Button>
         </form>
-    )
+    );
 }
 
 export default AddAppForm;
