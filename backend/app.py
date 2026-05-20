@@ -11,12 +11,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-123')
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='None',
-    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=False,
 )
 
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
-
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -52,9 +51,7 @@ class Application(db.Model):
             "role": self.role,
             "status": self.status
         }
-
-    user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
-
+    
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)

@@ -31,7 +31,7 @@ function AddAppForm({ onAdd }) {
                 label="Role"
                 placeholder="e.g., Software Engineer"
                 value={role}
-                onChange={e => setCompany(e.target.value)}
+                onChange={e => setRole(e.target.value)}
                 required
             />
             <div className="form-group select-group">

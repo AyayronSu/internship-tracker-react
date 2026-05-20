@@ -2,8 +2,13 @@ const BASE_URL = 'http://127.0.0.1:5000';
 
 export const api = {
     checkAuth: async () => {
-        const response = await fetch(`${BASE_URL}/check-auth`, { credentials: 'include' });
-        return await response.json();
+        try {
+            const response = await fetch(`${BASE_URL}/check-auth`, { credentials: 'include' });
+            if (!response.ok) return { is_logged_in: false };
+            return await response.json();
+        } catch (err) {
+            return { is_logged_in: false };
+        }
     },
     logout: async () => {
         const response = await fetch(`${BASE_URL}/logout`, { credentials: 'include' });
