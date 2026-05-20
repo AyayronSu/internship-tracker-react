@@ -11,9 +11,7 @@ function AddAppForm({ onAdd }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
         await onAdd({ company, role, status });
-
         setCompany('');
         setRole('');
         setStatus('Applied');
@@ -22,9 +20,22 @@ function AddAppForm({ onAdd }) {
 
     return (
         <form onSubmit={handleSubmit} className="add-form">
-            <FormInput placeholder="Company Name" value={company} onChange={e => setCompany(e.target.value)} required />
-            <FormInput placeholder="Job Role/Title" value={role} onChange={e => setRole(e.target.value)} required />
+            <FormInput
+                label="Company"
+                placeholder="e.g., Google"
+                value={company}
+                onChange={e => setCompany(e.target.value)}
+                required
+            />
+            <FormInput
+                label="Role"
+                placeholder="e.g., Software Engineer"
+                value={role}
+                onChange={e => setCompany(e.target.value)}
+                required
+            />
             <div className="form-group select-group">
+                <label className="form-label">Status</label>
                 <select value={status} onChange={e => setStatus(e.target.value)}>
                     <option value="Applied">Applied</option>
                     <option value="Interviewing">Interviewing</option>
@@ -32,7 +43,9 @@ function AddAppForm({ onAdd }) {
                     <option value="Rejected">Rejected</option>
                 </select>
             </div>
-            <Button type="submit" loading={loading}>Add Application</Button>
+            <Button type="submit" loading={loading}>
+                Add Job
+            </Button>
         </form>
     );
 }
