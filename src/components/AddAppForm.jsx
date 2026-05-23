@@ -11,11 +11,18 @@ function AddAppForm({ onAdd }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        await onAdd({ company, role, status });
-        setCompany('');
-        setRole('');
-        setStatus('Applied');
-        setLoading(false);
+
+        try {
+            await onAdd({ company, role, status });
+
+            setCompany('');
+            setRole('');
+            setStatus('Applied');
+        } catch (err) {
+            console.error("Form submission error caught inside component", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -26,6 +33,7 @@ function AddAppForm({ onAdd }) {
                 value={company}
                 onChange={e => setCompany(e.target.value)}
                 required
+                disabled={loading}
             />
             <FormInput
                 label="Role"
@@ -33,10 +41,15 @@ function AddAppForm({ onAdd }) {
                 value={role}
                 onChange={e => setRole(e.target.value)}
                 required
+                disabled={loading}
             />
             <div className="form-group select-group">
                 <label className="form-label">Status</label>
-                <select value={status} onChange={e => setStatus(e.target.value)}>
+                <select 
+                    value={status} 
+                    onChange={e => setStatus(e.target.value)}
+                    disabled={loading}
+                >
                     <option value="Applied">Applied</option>
                     <option value="Interviewing">Interviewing</option>
                     <option value="Offer">Offer</option>
