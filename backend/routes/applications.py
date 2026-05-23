@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from services.app_service import ApplicationService
 
@@ -14,13 +14,16 @@ def get_applications():
 @login_required
 def add_application():
     data = request.get_json() or {}
-    if not data.get('company') or not data.get('role'):
-        return jsonify({"error": "Missing company or role fields"}), 400
-    
+    company = data.get('company')
+    role = data.get('role')
+
+    if not company or not role:
+        abort(400, description="Missing required fields: company and role")
+
     new_app = ApplicationService.add_application(
         user_id=current_user.id,
-        company=data.get('company'),
-        role=data.get('role'),
+        company=company,
+        role=role,
         status=data.get('status', 'Applied')
     )
     return jsonify(new_app.to_dict()), 201
@@ -29,16 +32,21 @@ def add_application():
 @login_required
 def update_application(app_id):
     data = request.get_json() or {}
+
     updated_app = ApplicationService.update_application(current_user.id, app_id, data)
+
     if not updated_app:
-        return jsonify({"error": "Application not found"}), 404
+        abort(404, description=f"Application with ID {app_id} not found or access denied")
+
     return jsonify(updated_app.to_dict()), 200
 
 @apps_bp.route('/applications/<app_id>', methods=['DELETE'])
 @login_required
 def delete_application(app_id):
+
     success = ApplicationService.delete_application(current_user.id, app_id)
     if not success:
-        return jsonify({"error": "Application not found"}), 404
-    return jsonify({"message": "Deleted"}), 200
+        abort(404, description=f"Application with ID {app_id} not found or access denied")
+    
+    return jsonify({"message": "Deleted successfully"}), 200
 
