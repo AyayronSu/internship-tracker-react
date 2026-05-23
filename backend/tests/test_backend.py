@@ -21,7 +21,7 @@ def test_duplicate_user_registration_fails(client, app):
         db.session.commit()
 
     response = client.post("/register", json={
-        "username": "clondev",
+        "username": "clonedev",
         "password": "differentpass"
     })
     assert response.status_code == 400
