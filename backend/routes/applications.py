@@ -25,7 +25,7 @@ def add_application():
     )
     return jsonify(new_app.to_dict()), 201
 
-@apps_bp.route('/applications/<int:app_id>', methods=['PUT'])
+@apps_bp.route('/applications/<app_id>', methods=['PUT'])
 @login_required
 def update_application(app_id):
     data = request.get_json() or {}
@@ -34,7 +34,7 @@ def update_application(app_id):
         return jsonify({"error": "Application not found"}), 404
     return jsonify(updated_app.to_dict()), 200
 
-@apps_bp.route('/applications/<int:app_id>', methods=['DELETE'])
+@apps_bp.route('/applications/<app_id>', methods=['DELETE'])
 @login_required
 def delete_application(app_id):
     success = ApplicationService.delete_application(current_user.id, app_id)
