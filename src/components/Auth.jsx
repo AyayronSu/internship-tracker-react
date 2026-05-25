@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FormInput from "./ui/FormInput";
 import Button from "./ui/Button";
+import { api } from "../services/api"
 
 function Auth({ onLogin, mode }) {
     const isLoginMode = mode === "login";
@@ -15,26 +16,20 @@ function Auth({ onLogin, mode }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const endpoint = isLoginMode ? '/login' : '/register';
+        setError('');
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({ username, password }),
-                credentials: 'include',
-            });
+            const data = isLoginMode
+                ? await api.login(username, password)
+                : await api.register(username, password);
 
-            const data = await response.json();
-
-            if (response.ok) {
-                if (isLoginMode) onLogin(data.user);
-                else navigate('/login');
+            if (isLoginMode) {
+                onLogin(data.user);
             } else {
-                setError(data.error);
+                navigate('/login');
             }
         } catch (err) {
-            setError("Server connection failed.");
+            setError("Invalid username/password or server connection failed.");
         } finally {
             setLoading(false);
         }

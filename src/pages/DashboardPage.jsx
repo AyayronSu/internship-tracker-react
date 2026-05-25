@@ -32,9 +32,8 @@ function DashboardPage({ user }) {
             showFeedback("success", `Successfully added ${newApp.company}!`);
             fetchApps();
         } catch (err) {
-            const serverMessage = err.response?.data?.message || "Failed to save application tracker.";
+            const serverMessage = err.message || "Failed to save application tracker.";
             showFeedback("error", serverMessage);
-
             throw err;
         };
     };
