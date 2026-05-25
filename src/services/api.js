@@ -1,4 +1,4 @@
-const BASE_URL = 'http://127.0.0.1:5000'; 
+const BASE_URL = 'http://localhost:5000';
 
 export const api = {
     checkAuth: async () => {
@@ -9,6 +9,17 @@ export const api = {
         } catch (err) {
             return { is_logged_in: false };
         }
+    },
+    login: async (username, password) => {
+        const response = await fetch(`${BASE_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error("Login failed");
+        return await response.json();
     },
     logout: async () => {
         const response = await fetch(`${BASE_URL}/logout`, { credentials: 'include' });

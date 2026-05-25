@@ -42,7 +42,20 @@ def create_app():
         SESSION_COOKIE_SECURE=False,
     )
 
-    CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
+    CORS(
+        app, 
+        supports_credentials=True, 
+        resources={
+            r"/*": {
+                "origins": [
+                    "http://localhost:3000", 
+                    "http://127.0.0.1:3000",
+                    "http://localhost:5173", 
+                    "http://127.0.0.1:5173"
+                ]
+            }
+        }
+    )
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -64,4 +77,4 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='localhost', port=port)

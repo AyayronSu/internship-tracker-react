@@ -6,15 +6,22 @@ import { api } from "../services/api";
 function DashboardPage({ user }) {
     const [applications, setApplications] = useState([])
     const [filter, setFilter] = useState('All');
-    const [error, setError] = useState(null);
+    const [feedback, setFeedback] = useState({ type: null, message: null });
+    
+    const showFeedback = (type, message) => {
+        setFeedback({ type, message });
+
+        if (type === 'success') {
+            setTimeout(() => setFeedback({ type: null, message: null }), 4000);
+        }
+    };
 
     const fetchApps = async () => {
         try {
             const data = await api.getApplications();
             setApplications(data);
-            setError(null);
         } catch (err) {
-            setError("Unable to load applications.");
+            showFeedback("error", "Unable to load applications timeline.");
             console.error(err);
         }
     };
@@ -22,10 +29,14 @@ function DashboardPage({ user }) {
     const handleAddApplication = async (newApp) => {
         try {
             await api.addApplication(newApp);
+            showFeedback("success", `Successfully added ${newApp.company}!`);
             fetchApps();
         } catch (err) {
-            setError("Failed to add application. Please try again.");
-        }
+            const serverMessage = err.response?.data?.message || "Failed to save application tracker.";
+            showFeedback("error", serverMessage);
+
+            throw err;
+        };
     };
 
     useEffect(() => {
@@ -38,6 +49,21 @@ function DashboardPage({ user }) {
 
     return (
         <div className="app-container">
+            {feedback.message && (
+                <div className={`alert-banner ${feedback.type}-banner`}>
+                    <span>{feedback.message}</span>
+                    {feedback.type === 'error' && (
+                        <button className="retry-btn" onClick={fetchApps}>Retry</button>
+                    )}
+                    <button 
+                        className="close-btn"
+                        onClick={() => setFeedback({ type: null, message: null })}
+                    >
+                        ×
+                    </button>
+                </div>
+            )}
+
             <AddAppForm onAdd={handleAddApplication} />
 
             <div className="filter-section">
@@ -50,12 +76,6 @@ function DashboardPage({ user }) {
                     <option value="Rejected">Rejected</option>
                 </select>
             </div>
-
-            {error && (
-                <div className="error-banner">
-                    {error} <button className="retry-btn" onClick={fetchApps}>Retry</button>
-                </div>
-            )}
 
             {applications.length === 0 ? (
                 <div className="empty-state">
