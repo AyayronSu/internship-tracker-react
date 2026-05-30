@@ -6,6 +6,10 @@ from flask_cors import CORS
 from extensions import db, login_manager
 from models.user import User
 
+
+from dotenv import load_dotenv
+load_dotenv()
+
 dictConfig({
     'version': 1,
     'formatters': {
