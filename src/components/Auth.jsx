@@ -19,17 +19,23 @@ function Auth({ onLogin, mode }) {
         setError('');
 
         try {
-            const data = isLoginMode
-                ? await api.login(username, password)
-                : await api.register(username, password);
+            const response = await fetch(`http://localhost:5000${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify({ username, password }),
+                credentials: 'include',
+            });
 
-            if (isLoginMode) {
-                onLogin(data.user);
+            const data = await response.json();
+
+            if (response.ok) {
+                if (isLoginMode) onLogin(data.user);
+                else navigate('/login');
             } else {
-                navigate('/login');
+                setError(data.message || data.error || "Authentication failed.");
             }
         } catch (err) {
-            setError("Invalid username/password or server connection failed.");
+            setError("Server connection failed.");
         } finally {
             setLoading(false);
         }
