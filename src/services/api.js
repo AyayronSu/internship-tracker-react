@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 export const api = {
     checkAuth: async () => {
@@ -18,7 +18,27 @@ export const api = {
             credentials: 'include'
         });
 
-        if (!response.ok) throw new Error("Login failed");
+        // If the server returns an error, pass the JSON payload message forward
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMsg = errorData.message || errorData.error || "Login failed";
+            throw new Error(errorMsg);
+        }
+        return await response.json();
+    },
+    register: async (username, password) => {
+        const response = await fetch(`${BASE_URL}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMsg = errorData.message || errorData.error || "Registration failed";
+            throw new Error(errorMsg);
+        }
         return await response.json();
     },
     logout: async () => {
@@ -50,13 +70,12 @@ export const api = {
         if (response.status === 401) throw new Error("Unauthorized");
         return await response.json();
     },
-
     deleteApplication: async (id) => {
         const response = await fetch(`${BASE_URL}/applications/${id}`, {
             credentials: 'include',
             method: 'DELETE',
         });
-        if (response.status === 401) throw new Error("Unauthorized")
+        if (response.status === 401) throw new Error("Unauthorized");
         return response.ok;
     }
 }
