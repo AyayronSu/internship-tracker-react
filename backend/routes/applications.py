@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
+from extensions import db
+from models.application import Application
 from services.app_service import ApplicationService
 
 apps_bp = Blueprint('applications', __name__)
@@ -7,8 +9,34 @@ apps_bp = Blueprint('applications', __name__)
 @apps_bp.route('/applications', methods=['GET'])
 @login_required
 def get_applications():
-    user_apps = ApplicationService.get_user_applications(current_user.id)
-    return jsonify([app.to_dict() for app in user_apps]), 200
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    sort_by = request.args.get('sort', 'newest', type=str)
+    status_filter = request.args.get('status', 'All', type=str)
+    
+    query = Application.query.filter_by(user_id=current_user.id)
+
+    if status_filter != 'All':
+        query = query.filter_by(status=status_filter)
+
+    if sort_by == 'oldest':
+        query = query.order_by(Application.created_at.asc())
+    else:
+        query = query.order_by(Application.created_at.desc())
+
+    paginated_data = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "applications": [app.to_dict() for app in paginated_data.items],
+        "pagination": {
+            "current_page": paginated_data.page,
+            "per_page": paginated_data.per_page,
+            "total_pages": paginated_data.pages,
+            "total_items": paginated_data.total,
+            "has_next": paginated_data.has_next,
+            "has_prev": paginated_data.has_prev
+        }
+    }), 200
 
 @apps_bp.route('/applications', methods=['POST'])
 @login_required
@@ -49,4 +77,3 @@ def delete_application(app_id):
         abort(404, description=f"Application with ID {app_id} not found or access denied")
     
     return jsonify({"message": "Deleted successfully"}), 200
-

@@ -45,9 +45,15 @@ export const api = {
         const response = await fetch(`${BASE_URL}/logout`, { credentials: 'include' });
         return await response.json();
     },
-    getApplications: async () => {
-        const response = await fetch(`${BASE_URL}/applications`, { credentials: 'include' });
+    getApplications: async (page = 1, sort = 'newest', status = 'All', perPage = 10) => {
+        const response = await fetch(
+            `${BASE_URL}/applications?page=${page}&sort=${sort}&status=${status}&per_page=${perPage}`,
+            { credentials: 'include' }
+        );
+
         if (response.status === 401) throw new Error("Unauthorized");
+        if (!response.ok) throw new Error("Failed to fetch applications");
+
         return await response.json();
     },
     addApplication: async (appData) => {
