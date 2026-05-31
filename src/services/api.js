@@ -18,7 +18,6 @@ export const api = {
             credentials: 'include'
         });
 
-        // If the server returns an error, pass the JSON payload message forward
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             const errorMsg = errorData.message || errorData.error || "Login failed";

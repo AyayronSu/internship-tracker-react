@@ -31,15 +31,30 @@ function DashboardPage({ user }) {
             setApplications(data.applications);
             setPagination(data.pagination);
         } catch (err) {
+            if (err.message === "Unauthorized") {
+                showFeedback("error", "Your session has expired. Reloading...");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
             showFeedback("error", "Unable to load applications timeline.");
             console.error(err);
         }
     };
 
     const handleAddApplication = async (newApp) => {
+        if (!newApp.company.trim() || !newApp.role.trim()) {
+            showFeedback("error", "Company and Role names cannot be blank spaces.");
+            return;
+        }
+
         try {
-            await api.addApplication(newApp);
-            showFeedback("success", `Successfully added ${newApp.company}!`);
+            await api.addApplication({
+                company: newApp.company.trim(),
+                role: newApp.role.trim(),
+                status: newApp.status
+            });
+            showFeedback("success", `Successfully added ${newApp.company.trim()}!`);
             setPage(1);
             setSort('newest');
             fetchApps();
@@ -59,7 +74,7 @@ function DashboardPage({ user }) {
             {feedback.message && (
                 <div className={`alert-banner ${feedback.type}-banner`}>
                     <span>{feedback.message}</span>
-                    {feedback.type === 'error' && (
+                    {feedback.type === 'error' && feedback.message !== "Your session has expired. Reloading..." && (
                         <button className="retry-btn" onClick={fetchApps}>Retry</button>
                     )}
                     <button 
