@@ -6,7 +6,7 @@ from extensions import db
 class User(db.Model, UserMixin):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(120), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
 
     applications = db.relationship('Application', backref='owner', lazy=True, cascade="all, delete-orphan")
 

@@ -59,9 +59,11 @@ def test_get_applications_list(auth_client):
     assert response.status_code == 200
 
     data = response.get_json()
-    assert isinstance(data, list)
-    assert len(data) == 1
-    assert data[0]["company"] == "Amazon"
+    assert "applications" in data
+    assert "pagination" in data
+    assert isinstance(data["applications"], list)
+    assert len(data["applications"]) == 1
+    assert data["applications"][0]["company"] == "Amazon"
 
 def test_update_application_status(auth_client):
     """Verify an existing record can have its metadata or status altered."""

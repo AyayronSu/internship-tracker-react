@@ -3,8 +3,8 @@ import logging
 from logging.config import dictConfig
 from flask import Flask
 from flask_cors import CORS
+from flask_migrate import Migrate
 from extensions import db, login_manager
-from models.user import User
 
 
 from dotenv import load_dotenv
@@ -67,9 +67,12 @@ def create_app():
     )
 
     db.init_app(app)
+    Migrate(app, db)
     login_manager.init_app(app)
 
     login_manager.login_view = None
+
+    from models.user import User
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -84,7 +87,16 @@ def create_app():
     app.register_blueprint(apps_bp)
 
     with app.app_context():
+        from models.user import User
+        from models.application import Application
         db.create_all()
+
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                ALTER TABLE application 
+                ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT now()
+            """))
+            conn.commit()
 
     return app
 
