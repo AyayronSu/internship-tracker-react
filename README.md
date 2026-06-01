@@ -1,90 +1,133 @@
-# 🚀 Internship Application Tracker
+# ApplyTrack
 
-A sleek, full-stack web application designed to help job seekers organize their recruitment journey. Featuring a responsive interface with **Dark and Light mode** support and a robust **Flask API**.
+A full-stack job application tracker that lets you manage and monitor your job search in one place. Add applications, filter by status, sort by date, and track your progress through a clean dashboard.
 
-## 📝 Description
-
-This tracker allows users to log their job applications, track their status (Applied, Interviewing, Offer, Rejected), and manage entries in real-time. It solves the "spreadsheet fatigue" by providing a clean, visual dashboard that adapts to your preferred viewing environment.
-
-## ✨ Features
-
-* **Theme Toggle**: Seamlessly switch between polished Light and Dark modes.
-* **Real-time CRUD**: Create, Read, Update, and Delete applications instantly.
-* **Status Badges**: High-contrast, color-coded tags for quick status identification.
-* **Responsive Design**: Modern UI with consistent spacing and clear "touch targets" for buttons.
-* **Loading & Error Handling**: Graceful UI states for API fetches and server downtime.
-
-## 🛠 Tech Stack
-
-### Frontend
-
-* **React** (Vite)
-* **CSS3** (Custom Properties & Flexbox)
-* **Lucide React** (Icons)
-
-### Backend
-
-* **Flask** (Python)
-* **Flask-CORS** (Cross-Origin Resource Sharing)
-* **Gunicorn** (Production Server)
-
-### Deployment
-
-* **Vercel**: Frontend Hosting
-* **Render**: Backend Hosting
-
-## 📸 Screenshots
-
-### Dark Mode
-<img width="1069" height="1047" alt="Screenshot 2026-05-12 at 11 41 19" src="https://github.com/user-attachments/assets/fed2d4d2-e860-4e1c-af07-88479f582020" />
-
-### Light Mode
-<img width="1070" height="1057" alt="Screenshot 2026-05-12 at 11 41 07" src="https://github.com/user-attachments/assets/0fd9d619-b6f0-4023-8385-706300a91cbb" />
-
-## 🌐 Live Demo
-
-Check out the live application here: **https://internship-tracker-react.vercel.app/**
+🔗 **Live Demo:** [internship-tracker-react.vercel.app](https://internship-tracker-react.vercel.app)
 
 ---
 
-## ⚙️ Setup Instructions
+## Screenshots
+### Light Mode
+<img width="1014" height="729" alt="Screenshot 2026-06-01 at 18 47 22" src="https://github.com/user-attachments/assets/f7608516-3ad9-4a97-87e6-c7a4a2c6570e" />
+
+### Dark Mode
+<img width="1013" height="754" alt="Screenshot 2026-06-01 at 18 47 46" src="https://github.com/user-attachments/assets/80c13e1d-b1ca-432a-ae0c-0474da6c5888" />
+
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React, React Router, Vite |
+| Backend | Python, Flask, Flask-Login, Flask-CORS |
+| Database | PostgreSQL, SQLAlchemy |
+| Auth | Session-based auth with bcrypt password hashing |
+| Deployment | Vercel (frontend), Render (backend + database) |
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────┐         ┌──────────────────────────────────┐
+│        Frontend             │         │            Backend               │
+│     React + Vite            │         │          Flask REST API          │
+│     (Vercel)                │◄───────►│           (Render)               │
+│                             │  HTTPS  │                                  │
+│  /login      → Auth.jsx     │         │  POST /login                     │
+│  /signup     → Auth.jsx     │         │  POST /register                  │
+│  /dashboard  → Dashboard    │         │  GET  /applications              │
+│                             │         │  POST /applications              │
+└─────────────────────────────┘         │  PUT  /applications/:id          │
+                                        │  DELETE /applications/:id        │
+                                        │  GET  /check-auth                │
+                                        │  GET  /logout                    │
+                                        └──────────────┬───────────────────┘
+                                                       │
+                                                       ▼
+                                        ┌──────────────────────────────────┐
+                                        │         PostgreSQL               │
+                                        │                                  │
+                                        │  users         applications      │
+                                        │  ─────         ────────────      │
+                                        │  id (uuid)     id (uuid)         │
+                                        │  username      company           │
+                                        │  password_hash role              │
+                                        │                status            │
+                                        │                created_at        │
+                                        │                user_id (FK)      │
+                                        └──────────────────────────────────┘
+```
+
+Sessions are stored server-side via Flask-Login with secure, HTTP-only cookies. Cross-origin requests between Vercel and Render are handled with Flask-CORS, with `SameSite=None; Secure` cookies in production.
+
+---
+
+## Local Setup
 
 ### Prerequisites
 
-* Node.js & npm
-* Python 3.x
+- Node.js 18+
+- Python 3.10+
+- PostgreSQL running locally
 
-### 1. Backend Setup
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/AyayronSu/internship-tracker-react.git
+cd internship-tracker-react
+```
+
+### 2. Backend
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python app.py
-
 ```
 
-### 2. Frontend Setup
+Create a `.env` file in the `backend/` directory:
+
+```env
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=postgresql://localhost/applytrack
+```
+
+Create the local database and start the server:
 
 ```bash
-cd frontend
+createdb applytrack
+python app.py
+```
+
+The backend will run at `http://localhost:5000`.
+
+### 3. Frontend
+
+In a new terminal from the project root:
+
+```bash
 npm install
+```
+
+Create a `.env` file in the project root:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000
+```
+
+Start the dev server:
+
+```bash
 npm run dev
-
 ```
 
-### 3. Environment Variables
-
-Create a `.env` file in the frontend directory:
-
-```text
-VITE_API_URL=http://127.0.0.1:5000
-
-```
+The frontend will run at `http://localhost:5173`.
 
 ---
 
-## 🤝 Contributing
+## Deployment
 
-Feel free to fork this project and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
+The app is deployed across two platforms:
+
+- **Frontend** → [Vercel](https://vercel.com). Set the `VITE_API_BASE_URL` environment variable to your Render backend URL and redeploy after any env var changes (Vite bakes them in at build time).
+- **Backend** → [Render](https://render.com). Set `SECRET_KEY`, `DATABASE_URL`, and `FRONTEND_URL` environment variables. The `FRONTEND_URL` must match your Vercel deployment URL exactly for CORS to work.
