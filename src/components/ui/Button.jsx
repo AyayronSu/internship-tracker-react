@@ -1,4 +1,13 @@
-function Button({ children, type = "button", variant = "primary", onClick, disabled, loading, ...props }) {
+function Button({ 
+    children, 
+    type = "button", 
+    variant = "primary", 
+    onClick, 
+    disabled, 
+    loading, 
+    loadingText = "Loading...", 
+    ...props 
+}) {
     return (
         <button
             type={type}
@@ -7,7 +16,7 @@ function Button({ children, type = "button", variant = "primary", onClick, disab
             className={`btn btn-${variant}`}
             {...props}
         >
-            {loading ? "Adding..." : children}
+            {loading ? loadingText : children}
         </button>
     );
 }
